@@ -1,7 +1,7 @@
 PHP nagiosXML
 =============
 
-[![Project Status: Abandoned – Initial development has started, but there has not yet been a stable, usable release; the project has been abandoned and the author(s) do not intend on continuing development.](http://www.repostatus.org/badges/latest/abandoned.svg)](http://www.repostatus.org/#abandoned)
+[![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
 
 This is a PHP script that parses the Nagios status.dat file into an array, and
 then outputs that array as XML. There is also a PHP module written in C to do
@@ -9,8 +9,13 @@ the same task, and based on the same code.
 
 **Note** - While it seems that quite a few people are using this, XML really
   is an awful, 1990s technology. I also have not tested this with Nagios3, or
-  really with any Nagios version that came out in the past *six years*. If you've
-  found this, I would *highly* recommend one of the following alternatives:
+  really with any Nagios version that came out in the past *six years*.
+  If you've found this, I would *highly* recommend one of the following
+  alternatives:
+**Note/RussellVT** - Taking a fork of this project, we've actually integrated
+  it in to Nagios 3.x, Nagios 4.x and Icinga. I'll work on contributing back
+  to this project, as-possible (though I don't get much time to work on this,
+  as it mostly "just works" ... that is, until it's missing a feature I need).
 * [nagios-api](https://github.com/zorkian/nagios-api) provides a read/write ReST
   API for Nagios. It can be made read-only, in which case it just provides a
   ReST API to ``status.dat``.
