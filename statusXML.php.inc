@@ -36,16 +36,16 @@
    * | $Date::                                                            $ |
    * | $LastChangedRevision::                                             $ |
    * | $HeadURL::                                                         $ |
-   * +----------------------------------------------------------------------+ 
+   * +----------------------------------------------------------------------+
    */
 
 function outputXML($hosts, $services, $program)
 {
     // begin outputting XML
-    //header("Content-type: text/xml"); 
+    //header("Content-type: text/xml");
     echo "<?xml version=\"1.0\"?>"."\n";
     echo "<nagios_status>"."\n";
-    
+
     // program status
     if($program != "")
       {
@@ -74,7 +74,7 @@ function outputXML($hosts, $services, $program)
 	echo '   </host>'."\n";
     }
     echo '</hosts>'."\n";
-    
+
     // loop through the services
     echo '<services>'."\n";
     foreach ($services as $hostName => $service)
@@ -161,7 +161,7 @@ function getData2($statusFile)
 
     # open the file
     $fh = fopen($statusFile, 'r');
-    
+
     # variables to keep state
     $inSection = false;
     $sectionType = "";
@@ -173,7 +173,7 @@ function getData2($statusFile)
 
     #variables for total hosts and services
     $typeTotals = array();
-    
+
     # loop through the file
     while($line = fgets($fh))
     {
@@ -181,9 +181,9 @@ function getData2($statusFile)
 	$line = trim($line); // strip whitespace
 	if($line == ""){ continue;} // ignore blank line
 	if(substr($line, 0, 1) == "#"){	continue;} // ignore comment
-	
+
 	// ok, now we need to deal with the sections
-	
+
 	if(! $inSection)
 	{
 	    // we're not currently in a section, but are looking to start one
@@ -196,10 +196,10 @@ function getData2($statusFile)
 
 		// increment the counter for this sectionType
 		if(isset($typeTotals[$sectionType])){$typeTotals[$sectionType]=$typeTotals[$sectionType]+1;}else{$typeTotals[$sectionType]=1;}
-		
+
 	    }
 	}
-    
+
 	if($inSection && $line == "}") // closing a section
 	{
 	    if($sectionType == "service")
@@ -219,7 +219,7 @@ function getData2($statusFile)
 	    // we're currently in a section, and this line is part of it
 	    $lineKey = substr($line, 0, strpos($line, "="));
 	    $lineVal = substr($line, strpos($line, "=")+1);
-	    
+
 	    // add to the array as appropriate
 	    if($sectionType == "service")
 	    {
@@ -239,12 +239,12 @@ function getData2($statusFile)
 	}
 
     }
-    
+
     fclose($fh);
-    
+
     $retArray = array("hosts" => $hostStatus, "services" => $serviceStatus);
-    
-    return $retArray;    
+
+    return $retArray;
 }
 
 // parse nagios3 status.dat
@@ -271,7 +271,7 @@ function getData3($statusFile)
 
     #variables for total hosts and services
     $typeTotals = array();
-    
+
     # loop through the file
     while($line = fgets($fh))
     {
@@ -279,7 +279,7 @@ function getData3($statusFile)
 	$line = trim($line); // strip whitespace
 	if($line == ""){ continue;} // ignore blank line
 	if(substr($line, 0, 1) == "#"){	continue;} // ignore comment
-	
+
 	// ok, now we need to deal with the sections
 	if(! $inSection)
 	{
@@ -293,7 +293,7 @@ function getData3($statusFile)
 
 		// increment the counter for this sectionType
 		if(isset($typeTotals[$sectionType])){$typeTotals[$sectionType]=$typeTotals[$sectionType]+1;}else{$typeTotals[$sectionType]=1;}
-		
+
 	    }
 	}
     	elseif($inSection && trim($line) == "}") // closing a section
@@ -330,11 +330,11 @@ function getData3($statusFile)
 	}
 
     }
-    
+
     fclose($fh);
 
     $retArray = array("hosts" => $hostStatus, "services" => $serviceStatus, "program" => $programStatus);
-    return $retArray;    
+    return $retArray;
 }
 
 

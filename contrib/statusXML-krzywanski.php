@@ -39,7 +39,7 @@
    * | $Date::                                                            $ |
    * | $LastChangedRevision::                                             $ |
    * | $HeadURL::                                                         $ |
-   * +----------------------------------------------------------------------+ 
+   * +----------------------------------------------------------------------+
    */
 
 
@@ -79,7 +79,7 @@ outputXML($hosts, $services, $program, $status_keys, $host_keys, $service_keys);
 function outputXML($hosts, $services, $program, $status_keys, $host_keys, $service_keys)
 {
 	// begin outputting XML
-	//header("Content-type: text/xml"); 
+	//header("Content-type: text/xml");
 	echo "<?xml version=\"1.0\"?>"."\n";
 	echo "<nagios_status>"."\n";
 
@@ -290,7 +290,7 @@ function getData2($statusFile)
 
 		$retArray = array("hosts" => $hostStatus, "services" => $serviceStatus);
 
-		return $retArray;    
+		return $retArray;
 	}
 
 	// parse nagios3 status.dat
@@ -380,7 +380,7 @@ function getData2($statusFile)
 			fclose($fh);
 
 			$retArray = array("hosts" => $hostStatus, "services" => $serviceStatus, "program" => $programStatus);
-			return $retArray;    
+			return $retArray;
 		}
 
 

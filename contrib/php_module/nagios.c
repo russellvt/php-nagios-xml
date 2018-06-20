@@ -37,7 +37,7 @@
 # | $Date::                                                            $ |
 # | $LastChangedRevision::                                             $ |
 # | $HeadURL::                                                         $ |
-# +----------------------------------------------------------------------+ 
+# +----------------------------------------------------------------------+
 #
 
 # by Whitham D. Reeve II of  General Communication, Inc.
@@ -148,15 +148,15 @@ PHP_FUNCTION(nagios_get_status)
 				"acknowledgement_type", "active_checks_enabled", "passive_checks_enabled", "last_update"};
 	int hostkeySize = 22;
 
-	char *servicekeys[64] = {"host_name", "service_description", "has_been_checked", "check_execution_time", 
-				"check_latency", "current_state", "state_type", "last_state_change", "last_time_ok", 
-				"last_time_warning", "last_time_unknown", "last_time_critical", "plugin_output", 
-				"last_check", "notifications_enabled", "active_checks_enabled", "passive_checks_enabled", 
+	char *servicekeys[64] = {"host_name", "service_description", "has_been_checked", "check_execution_time",
+				"check_latency", "current_state", "state_type", "last_state_change", "last_time_ok",
+				"last_time_warning", "last_time_unknown", "last_time_critical", "plugin_output",
+				"last_check", "notifications_enabled", "active_checks_enabled", "passive_checks_enabled",
 				"problem_has_been_acknowledged", "acknowledgement_type", "last_update", "is_flapping"};
 	int servicekeySize = 21;
 
 	FILE *statusfile;
-	
+
 	int buffer_size = 512;
 	char * lineptr = (char *) malloc(buffer_size + 1);
 
@@ -165,7 +165,7 @@ PHP_FUNCTION(nagios_get_status)
 
 	char *filename;
 	int filename_len;
-	
+
 	int inSection = 0;
 	char *sectionType = malloc(buffer_size);
 	int sectionTypeSize = 0;
@@ -177,12 +177,12 @@ PHP_FUNCTION(nagios_get_status)
 	int linevalSize = 0;
 
 	zval * sectionData;
-	
+
 	zval * serviceStatus;
 	zval * hostStatus;
 
 	zval * serviceDescription;
-	
+
 	zval **tmp;
 
 	char *hostname;
@@ -200,7 +200,7 @@ PHP_FUNCTION(nagios_get_status)
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
 		RETURN_NULL();
 	}
-	
+
 	statusfile = fopen(filename, "r+");
 	if (statusfile == NULL)
 	{
@@ -227,9 +227,9 @@ PHP_FUNCTION(nagios_get_status)
 				sectionTypeSize = strchr(lineptr, ' ') - lineptr;
 				strncpy(sectionType, lineptr, sectionTypeSize);
 				sectionType[sectionTypeSize] = '\0';
-				
+
 				inSection = 1;
-				
+
 				MAKE_STD_ZVAL(sectionData);
 				array_init(sectionData);
 
@@ -246,7 +246,7 @@ PHP_FUNCTION(nagios_get_status)
 						hostname = Z_STRVAL_PP(tmp);
 						hostnameSize = Z_STRLEN_PP(tmp);
 					}
-				
+
 					if (zend_symtable_find(sectionData->value.ht, "service_description", strlen("service_description") + 1, (void **)&tmp) == SUCCESS)
 					{
 						if (Z_TYPE_PP(tmp) == IS_STRING)
@@ -268,7 +268,7 @@ PHP_FUNCTION(nagios_get_status)
 						array_init(serviceDescription);
 						add_assoc_zval_ex(serviceDescription, servdesc, servdescSize + 1, sectionData);
 						add_assoc_zval_ex(serviceStatus, hostname, hostnameSize + 1, serviceDescription);
-						
+
 					}
 				}
 			}
@@ -281,14 +281,14 @@ PHP_FUNCTION(nagios_get_status)
 						hostname = Z_STRVAL_PP(tmp);
 						hostnameSize = Z_STRLEN_PP(tmp);
 					}
-					
+
 				}
 				if (hostnameSize != 0)
 				{
 					add_assoc_zval_ex(hostStatus, hostname, hostnameSize + 1, sectionData);
 				}
 			}
-			
+
 			inSection = 0;
 			strncpy(sectionType, "\0\0", buffer_size);
 		}
@@ -322,9 +322,9 @@ PHP_FUNCTION(nagios_get_status)
 	free(lineval);
 	free(linekey);
 	free(sectionType);
-	
+
 	fclose(statusfile);
-	
+
 	array_init(return_value);
 	add_assoc_zval(return_value, "service", serviceStatus);
 	add_assoc_zval(return_value, "host", hostStatus);

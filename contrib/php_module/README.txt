@@ -37,7 +37,7 @@
    * | $Date::                                                            $ |
    * | $LastChangedRevision::                                             $ |
    * | $HeadURL::                                                         $ |
-   * +----------------------------------------------------------------------+ 
+   * +----------------------------------------------------------------------+
    */
 
 Implementation of Jason Antman's statusXML.php in C as a PHP Module.

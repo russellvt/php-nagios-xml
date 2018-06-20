@@ -35,7 +35,7 @@
    * | $Date::                                                            $ |
    * | $LastChangedRevision::                                             $ |
    * | $HeadURL::                                                         $ |
-   * +----------------------------------------------------------------------+ 
+   * +----------------------------------------------------------------------+
    */
 
 // PARSE IT
@@ -115,7 +115,7 @@ function getTableFooter()
  * @param $only_bad boolean if true leave out everything OK. Default false.
  * @return string
  */
-function getStatusTRs($only_bad = false) 
+function getStatusTRs($only_bad = false)
 {
     global $doc, $hosts;
     $str = "";
