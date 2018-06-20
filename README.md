@@ -12,10 +12,12 @@ the same task, and based on the same code.
   really with any Nagios version that came out in the past *six years*.
   If you've found this, I would *highly* recommend one of the following
   alternatives:
+
 **Note/RussellVT** - Taking a fork of this project, we've actually integrated
   it in to Nagios 3.x, Nagios 4.x and Icinga. I'll work on contributing back
   to this project, as-possible (though I don't get much time to work on this,
   as it mostly "just works" ... that is, until it's missing a feature I need).
+
 * [nagios-api](https://github.com/zorkian/nagios-api) provides a read/write ReST
   API for Nagios. It can be made read-only, in which case it just provides a
   ReST API to ``status.dat``.
