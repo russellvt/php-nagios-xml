@@ -31,7 +31,6 @@ the same task, and based on the same code.
 
 License
 --------
-
 This project is licensed under the GNU General Public License (GPL) version
 3 with the *ADDITIONAL CONDITIONS* (Article 7, terms b) and c)) that existing
 copyright notices and author attributions must be left intact, and that any
@@ -66,20 +65,31 @@ Source
 -------
 
 The current canonical source of the newest version of this project is GitHub,
-specifically <https://github.com/jantman/php-nagios-xml>. Prior to March 2013,
-the canonical source of this project was via SVN at
+specifically <https://github.com/russellvt/php-nagios-xml>.
+
+Prior to June 2018, the canonical source of this project was via GitHub at
+<https://github.com/jantman/php-nagios-xml>.
+
+Prior to March 2013, the canonical source of this project was via SVN at
 <http://svn.jasonantman.com/nagios-xml/> or via the ViewVC web interface at
-<http://viewvc.jasonantman.com/cgi-bin/viewvc.cgi/nagios-xml/>. Going forward,
-the only online source will be at GitHub.
+<http://viewvc.jasonantman.com/cgi-bin/viewvc.cgi/nagios-xml/>.
+
+Going forward, the only online source will be at GitHub.
 
 Authors
 --------
+Russell M. Van Tassell <http://www.geekoncall.net> - Forked Project (06/2018)
+
 Jason Antman <http://www.jasonantman.com> - principal author
+
 Artur Krzywański <http://www.krzywanski.net/> - patch for selection of returned keys
+
 Whitham D. Reeve II of General Communication, Inc. <http://www.gci.com> - PHP module
 
 Changelog
 ----------
+2008-06-19 russellvt:
+	- Updated repository Status. Addendums/Updates to README.
 
 2010-08-10 (r6) jantman:
 	- added better headers to all files, updated license
