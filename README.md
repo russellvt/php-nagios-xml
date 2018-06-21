@@ -3,6 +3,8 @@ PHP nagiosXML
 
 [![Project Status: Inactive – The project has reached a stable, usable state but is no longer being actively developed; support/maintenance will be provided as time allows.](http://www.repostatus.org/badges/latest/inactive.svg)](http://www.repostatus.org/#inactive)
 
+[![Build Status](https://travis-ci.org/russellvt/php-nagios-xml.svg?branch=master)](https://travis-ci.org/russellvt/php-nagios-xml)
+
 This is a PHP script that parses the Nagios status.dat file into an array, and
 then outputs that array as XML. There is also a PHP module written in C to do
 the same task, and based on the same code.
