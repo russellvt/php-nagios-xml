@@ -1,5 +1,4 @@
 <?php
-
   /*
    * +----------------------------------------------------------------------+
    * | statusXML.php.inc                                                    |
@@ -8,6 +7,7 @@
    * | The canonical source for this project is:                            |
    * |   <http://svn.jasonantman.com/nagios-xml/> (via SVN or HTTP)         |
    * +----------------------------------------------------------------------+
+   * | Copyright (c) 2017-2018 Russell M. Van Tassell                       |
    * | Copyright (c) 2006-2010 Jason Antman.                                |
    * |                                                                      |
    * | This program is free software; you can redistribute it and/or modify |
@@ -27,9 +27,13 @@
    * | 59 Temple Place - Suite 330                                          |
    * | Boston, MA 02111-1307, USA.                                          |
    * +----------------------------------------------------------------------+
-   * | Authors: Jason Antman <jason@jasonantman.com>                        |
+   * | Authors:                                                             |
+   * |  - Russell M. Van Tassell <russell@geekoncall.net>                   |
+   * |  - Jason Antman <jason@jasonantman.com>                              |
    * +----------------------------------------------------------------------+
    * | CHANGELOG:                                                           |
+   * | 2018-06-18 russellvt:                                                |
+   * |   - Forked main project. Started integrating our prior changes.      |
    * | 2010-08-10 (r6) jantman:                                             |
    * |   - updated license, file header, changelog                          |
    * +----------------------------------------------------------------------+
@@ -40,6 +44,7 @@
    */
 
 function outputXML($hosts, $services, $program)
+
 {
     // begin outputting XML
     //header("Content-type: text/xml");
@@ -47,55 +52,49 @@ function outputXML($hosts, $services, $program)
     echo "<nagios_status>"."\n";
 
     // program status
-    if($program != "")
-      {
+    if ($program != "") {
 	echo '<programStatus>'."\n";
-	foreach($program as $key => $val)
-	  {
+	foreach ($program as $key => $val) {
 	    $key = xmlname($key);
 	    $val = xmlstring($val);
 	    echo '      <'.$key.'>'.$val.'</'.$key.'>'."\n";
-	  }
+        }
 	echo '</programStatus>'."\n";
-      }
+    }
 
     // hosts
     echo '<hosts>'."\n";
-    foreach($hosts as $hostName => $hostArray)
-    {
+    foreach ($hosts as $hostName => $hostArray) {
 	$current_state = $hostArray['current_state'];
 	echo '   <host>'."\n";
-	foreach($hostArray as $key => $val)
-	  {
+	foreach ($hostArray as $key => $val) {
 	    $key = xmlname($key);
 	    $val = xmlstring($val);
 	    echo '      <'.$key.'>'.$val.'</'.$key.'>'."\n";
-	  }
+        }
 	echo '   </host>'."\n";
     }
     echo '</hosts>'."\n";
 
     // loop through the services
     echo '<services>'."\n";
-    foreach ($services as $hostName => $service)
-      {
-	foreach ($service as $serviceDesc => $serviceArray)
-	  {
+    foreach ($services as $hostName => $service) {
+	foreach ($service as $serviceDesc => $serviceArray) {
 	    echo '   <service>'."\n";
-	    foreach($serviceArray as $key => $val)
-	      {
+	    foreach ($serviceArray as $key => $val) {
 		$key = xmlname($key);
 		$val = xmlstring($val);
 		echo '      <'.$key.'>'.$val.'</'.$key.'>'."\n";
-	      }
+            }
 	    echo '   </service>'."\n";
-	  }
-      }
+        }
+    }
     echo '</services>'."\n";
     echo "</nagios_status>";
 }
 
 // replace reserved characters in key for name
+//  - Should likely be replaced with htmlspecialchars($s, ENT_NOQUOTES) - RVT
 function xmlname($s)
 {
   $s = str_replace("<", "&lt;", $s);
@@ -112,41 +111,38 @@ function xmlstring($s)
   return $s;
 }
 
-// figure out what version the file is
+
 function getFileVersion($statusFile)
+
+// figure out what version the file is (Default to 2)
+
 {
   global $created_ts;
   $version = 2;
 
   $fh = fopen($statusFile, 'r');
   $inInfo = false;
-  while($line = fgets($fh))
-    {
-      if(trim($line) == "info {")
-	{
+
+  while ($line = fgets($fh)) {
+      if (trim($line) == "info {") {
 	  $inInfo = true;
-	}
-      elseif(trim($line) == "}")
-	{
+      } elseif (trim($line) == "}") {
 	  $inInfo = false;
 	  break;
-	}
-      elseif($inInfo)
-	{
+      } elseif ($inInfo) {
 	  $vals = explode("=", $line);
-	  if(trim($vals[0]) == "created")
-	    {
+
+	  if (trim($vals[0]) == "created") {
 	      $created = $vals[1];
-	    }
-	  elseif(trim($vals[0]) == "version")
-	    {
-	      if(substr($vals[1], 0, 1) == "3")
-		{
-		  $version = 3;
-		}
-	    }
-	}
-    }
+          } elseif (trim($vals[0]) == "version") {
+              // Should set to substr and verify values 1-4. RVT *** FIX ME ***
+	      if (substr($vals[1], 0, 1) == "1") { $version = 1; }
+	      if (substr($vals[1], 0, 1) == "3") { $version = 3; }
+	      if (substr($vals[1], 0, 1) == "4") { $version = 4; }
+          }
+      }
+  }
+
   return $version;
 }
 
@@ -175,63 +171,55 @@ function getData2($statusFile)
     $typeTotals = array();
 
     # loop through the file
-    while($line = fgets($fh))
-    {
+    while ($line = fgets($fh)) {
 	$lineNum++; // increment counter of line number, mainly for debugging
 	$line = trim($line); // strip whitespace
-	if($line == ""){ continue;} // ignore blank line
-	if(substr($line, 0, 1) == "#"){	continue;} // ignore comment
+	if ($line == ""){ continue;} // ignore blank line
+	if (substr($line, 0, 1) == "#"){ continue;} // ignore comment
 
 	// ok, now we need to deal with the sections
 
-	if(! $inSection)
-	{
+	if (! $inSection) {
 	    // we're not currently in a section, but are looking to start one
-	    if(strstr($line, " ") && (substr($line, -1) == "{")) // space and ending with {, so it's a section header
-	    {
-		$sectionType = substr($line, 0, strpos($line, " ")); // first word on line is type
+	    if (strstr($line, " ") && (substr($line, -1) == "{")) {
+                // space and ending with {, so it's a section header
+                // first word on line is type
+		$sectionType = substr($line, 0, strpos($line, " "));
 		$inSection = true;
 		// we're now in a section
 		$sectionData = array();
 
 		// increment the counter for this sectionType
-		if(isset($typeTotals[$sectionType])){$typeTotals[$sectionType]=$typeTotals[$sectionType]+1;}else{$typeTotals[$sectionType]=1;}
-
+		if (isset($typeTotals[$sectionType])) {
+                    $typeTotals[$sectionType] = $typeTotals[$sectionType] + 1;
+                } else {
+                    $typeTotals[$sectionType]=1;
+                }
 	    }
 	}
 
-	if($inSection && $line == "}") // closing a section
-	{
-	    if($sectionType == "service")
-	    {
+	if ($inSection && $line == "}") { // closing a section
+	    if ($sectionType == "service") {
 		$serviceStatus[$sectionData['host_name']][$sectionData['service_description']] = $sectionData;
 	    }
-	    if($sectionType == "host")
-	    {
+	    if ($sectionType == "host") {
 		$hostStatus[$sectionData["host_name"]] = $sectionData;
 	    }
 	    $inSection = false;
 	    $sectionType = "";
 	    continue;
-	}
-	else
-	{
+	} else {
 	    // we're currently in a section, and this line is part of it
 	    $lineKey = substr($line, 0, strpos($line, "="));
 	    $lineVal = substr($line, strpos($line, "=")+1);
 
 	    // add to the array as appropriate
-	    if($sectionType == "service")
-	    {
-		if(in_array($lineKey, $service_keys))
-		{
+	    if ($sectionType == "service") {
+		if (in_array($lineKey, $service_keys)) {
 		    $sectionData[$lineKey] = $lineVal;
 		}
-	    }
-	    elseif($sectionType == "host")
-	    {
-		if(in_array($lineKey, $host_keys))
-		{
+	    } elseif ($sectionType == "host") {
+		if (in_array($lineKey, $host_keys)) {
 		    $sectionData[$lineKey] = $lineVal;
 		}
 	    }
@@ -247,8 +235,11 @@ function getData2($statusFile)
     return $retArray;
 }
 
-// parse nagios3 status.dat
+
 function getData3($statusFile)
+
+// parse nagios3 status.dat
+
 {
   global $debug;
     // the keys to get from host status:
@@ -273,58 +264,57 @@ function getData3($statusFile)
     $typeTotals = array();
 
     # loop through the file
-    while($line = fgets($fh))
-    {
+    while ($line = fgets($fh)) {
 	$lineNum++; // increment counter of line number, mainly for debugging
 	$line = trim($line); // strip whitespace
-	if($line == ""){ continue;} // ignore blank line
-	if(substr($line, 0, 1) == "#"){	continue;} // ignore comment
+
+	if ($line == ""){ continue;} // ignore blank line
+	if (substr($line, 0, 1) == "#"){ continue;} // ignore comment
 
 	// ok, now we need to deal with the sections
-	if(! $inSection)
-	{
+	if (! $inSection) {
 	    // we're not currently in a section, but are looking to start one
-	  if(substr($line, strlen($line)-1, 1) == "{") // space and ending with {, so it's a section header
-	    {
-		$sectionType = substr($line, 0, strpos($line, " ")); // first word on line is type
-		$inSection = true;
-		// we're now in a section
-		$sectionData = array();
+	    if (substr($line, strlen($line)-1, 1) == "{") {
+                // space and ending with {, so it's a section header
+                // first word on line is type
+                $sectionType = substr($line, 0, strpos($line, " "));
+                $inSection = true;
+                // we're now in a section
+                $sectionData = array();
 
-		// increment the counter for this sectionType
-		if(isset($typeTotals[$sectionType])){$typeTotals[$sectionType]=$typeTotals[$sectionType]+1;}else{$typeTotals[$sectionType]=1;}
-
+                // increment the counter for this sectionType
+                if (isset($typeTotals[$sectionType])) {
+                    $typeTotals[$sectionType] = $typeTotals[$sectionType] + 1;
+                } else {
+                    $typeTotals[$sectionType] = 1;
+                }
 	    }
-	}
-    	elseif($inSection && trim($line) == "}") // closing a section
-	{
-	    if($sectionType == "servicestatus")
-	    {
+	} elseif ($inSection && trim($line) == "}") {
+            // closing a section
+	    if ($sectionType == "servicestatus") {
 		$serviceStatus[$sectionData['host_name']][$sectionData['service_description']] = $sectionData;
-	    }
-	    elseif($sectionType == "hoststatus")
-	    {
+	    } elseif ($sectionType == "hoststatus") {
 		$hostStatus[$sectionData["host_name"]] = $sectionData;
-	    }
-	    elseif($sectionType == "programstatus")
-	      {
+	    } elseif ($sectionType == "programstatus") {
 		$programStatus = $sectionData;
 	      }
 	    $inSection = false;
 	    $sectionType = "";
 	    continue;
-	}
-	else
-	{
+	} else {
 	    // we're currently in a section, and this line is part of it
 	    $lineKey = substr($line, 0, strpos($line, "="));
 	    $lineVal = substr($line, strpos($line, "=")+1);
 
 	    // add to the array as appropriate
-	    if($sectionType == "servicestatus" || $sectionType == "hoststatus" || $sectionType == "programstatus")
-	    {
-	      if($debug){ echo "LINE ".$lineNum.": lineKey=".$lineKey."= lineVal=".$lineVal."=\n";}
-	      $sectionData[$lineKey] = $lineVal;
+	    if ($sectionType == "servicestatus" ||
+                $sectionType == "hoststatus" ||
+                $sectionType == "programstatus"
+               ) {
+	        if ($debug){
+                    echo "LINE $lineNum: lineKey=$lineKey= lineVal=$lineVal=\n";
+                }
+	        $sectionData[$lineKey] = $lineVal;
 	    }
 	    // else continue on, ignore this section, don't save anything
 	}
@@ -333,35 +323,42 @@ function getData3($statusFile)
 
     fclose($fh);
 
-    $retArray = array("hosts" => $hostStatus, "services" => $serviceStatus, "program" => $programStatus);
+    $retArray = array("hosts" => $hostStatus,
+                      "services" => $serviceStatus,
+                      "program" => $programStatus
+                     );
+
     return $retArray;
 }
 
 
-// this formats the age of a check in seconds into a nice textual description
 function ageString($seconds)
+
+// this formats the age of a check in seconds into a nice textual description
+
 {
-	$age = "";
-	if($seconds > 86400)
-	{
-		$days = (int)($seconds / 86400);
-		$seconds = $seconds - ($days * 86400);
-		$age .= $days." days ";
-	}
-	if($seconds > 3600)
-	{
-		$hours = (int)($seconds / 3600);
-		$seconds = $seconds - ($hours * 3600);
-		$age .= $hours." hours ";
-	}
-	if($seconds > 60)
-	{
-		$minutes = (int)($seconds / 60);
-		$seconds = $seconds - ($minutes * 60);
-		$age .= $minutes." minutes ";
-	}
-	$age .= $seconds." seconds ";
-	return $age;
+  $age = "";
+  if ($seconds > 86400) {
+    $days = (int)($seconds / 86400);
+    $seconds = $seconds - ($days * 86400);
+    $age .= $days." days ";
+  }
+
+  if ($seconds > 3600) {
+    $hours = (int)($seconds / 3600);
+    $seconds = $seconds - ($hours * 3600);
+    $age .= $hours." hours ";
+  }
+
+  if ($seconds > 60) {
+    $minutes = (int)($seconds / 60);
+    $seconds = $seconds - ($minutes * 60);
+    $age .= $minutes." minutes ";
+  }
+
+  $age .= $seconds." seconds ";
+
+  return $age;
 }
 
 /*
@@ -372,6 +369,4 @@ function ageString($seconds)
     $service_keys = array('host_name', 'service_description', 'has_been_checked', 'check_execution_time', 'check_latency', 'current_state', 'state_type', 'last_state_change', 'last_time_ok', 'last_time_warning', 'last_time_unknown', 'last_time_critical', 'plugin_output', 'last_check', 'notifications_enabled', 'active_checks_enabled', 'passive_checks_enabled', 'problem_has_been_acknowledged', 'acknowledgement_type', 'last_update', 'is_flapping');
 
 */
-
-
 ?>
