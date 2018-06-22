@@ -31,6 +31,7 @@ the same task, and based on the same code.
   the same thing as this script (I've not tested it), but returns nice, happy
   JSON output instead of ugly XML.
 
+
 License
 --------
 This project is licensed under the GNU General Public License (GPL) version
@@ -43,6 +44,7 @@ Furthermore, it is politely requested (but not required) that any
 modifications be sent back to the original author for inclusion in the latest
 version of the code.
 
+
 Components
 -----------
 statusXML.php.inc - the include file. This is just made up of functions that
@@ -51,6 +53,7 @@ do all of the heavy lifting.
 statusXML.php - a script that shows how to make use of the functions in
 statusXML.php.inc to output XML. You may as well replicate this simple logic
 in your program.
+
 
 Other Files
 ------------
@@ -62,6 +65,16 @@ time, I should merge it into the current version.
 php_module/ - This code rewritten in C as a PHP module for high
 performance. Generously coded by Whitham D. Reeve II of General Communication,
 Inc. <http://www.gci.com>. Also currently only supports Nagios2.
+
+
+Tests
+-----
+PHPUnit tests are very early in-creation. You can download
+[PHPUnit](https://phpunit.de/) and run the tests manually from the
+top-level directory:
+
+    phpunit --configuration phpunit.xml --coverage-text
+
 
 Source
 -------
