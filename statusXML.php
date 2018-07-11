@@ -1,5 +1,4 @@
 <?php
-
   /*
    * +----------------------------------------------------------------------+
    * | statusXML.php                                                        |
@@ -27,9 +26,13 @@
    * | 59 Temple Place - Suite 330                                          |
    * | Boston, MA 02111-1307, USA.                                          |
    * +----------------------------------------------------------------------+
-   * | Authors: Jason Antman <jason@jasonantman.com>                        |
+   * | Authors:                                                             |
+   * |  - Russell M. Van Tassell <russell@geekoncall.net>                   |
+   * |  - Jason Antman <jason@jasonantman.com>                              |
    * +----------------------------------------------------------------------+
    * | CHANGELOG:                                                           |
+   * | 2018-06-18 russellvt:                                                |
+   * |   - Forked main project. Started integrating our prior changes.      |
    * | 2010-08-10 (r6) jantman:                                             |
    * |   - updated license, file header, changelog                          |
    * +----------------------------------------------------------------------+
@@ -43,31 +46,29 @@
 // this script mines data from the status.dat of a Nagios 2.x installation
 require_once("statusXML.php.inc");
 
+#$statusFile = "/var/lib/icinga/status.dat";
 $statusFile = "/var/lib/nagios/status.dat";
 
-$nag_version = getFileVersion($statusFile); // returns integer 2 or 3
+// Get Nagios Version from Status File (2, 3 or 4)
+$nag_version = getFileVersion($statusFile);
 $created_ts = 0;
 
 $debug = false;
 
-if($nag_version == 3)
-  {
-    $data = getData3($statusFile); // returns an array
-  }
-else
-  {
-    $data = getData2($statusFile); // returns an array
-  }
+// Get Array of Nagios Data
+if ($nag_version == 3) {
+  $data = getData3($statusFile);
+} else {
+  $data = getData2($statusFile);
+}
 
 $hosts = $data['hosts'];
 $services = $data['services'];
 $program = "";
-if(array_key_exists("program", $data))
-  {
-    $program = $data['program'];
-  }
+if (array_key_exists("program", $data)) {
+  $program = $data['program'];
+}
 
 outputXML($hosts, $services, $program);
-
 
 ?>
