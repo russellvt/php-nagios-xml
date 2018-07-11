@@ -42,18 +42,26 @@
    * +----------------------------------------------------------------------+
    */
 
+// Debugging
+$debug = true;
 
 // this script mines data from the status.dat of a Nagios 2.x installation
 require_once("statusXML.php.inc");
 
-#$statusFile = "/var/lib/icinga/status.dat";
-$statusFile = "/var/lib/nagios/status.dat";
+$statusFiles = array(
+                 "nagios2" => "/var/lib/nagios/status.dat",
+                 "nagios3" => "/var/lib/nagios/status.dat",
+                 "nagios4" => "/var/log/nagios/status.dat",
+                 "icinga1" => "/var/lib/icinga/status.dat",
+                 #"icinga1" => "/var/spool/icinga/status.dat",
+               );
+
+$statusFile = $statusFiles['icinga1'];
 
 // Get Nagios Version from Status File (2, 3 or 4)
 $nag_version = getFileVersion($statusFile);
+if ($debug){ print "(dbg) File Version: $nag_version\n"; }
 $created_ts = 0;
-
-$debug = false;
 
 // Get Array of Nagios Data
 if ($nag_version == 3) {

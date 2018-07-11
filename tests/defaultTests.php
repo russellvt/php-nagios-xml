@@ -1,5 +1,7 @@
 <?php
 
+include_once("statusXML.php.inc");
+
 # Refs:
 #  - https://phpunit.de/
 #  - https://phpunit.de/getting-started/phpunit-4.html
@@ -40,9 +42,10 @@ final class PHPNagiosXMLTest extends TestCase
         #$this->pdo->query("DROP TABLE hello");
     }
 
-    public function testMe()
+    public function testIcingaVersionIsOne()
     {
-        print "Place Holder Test";
+        $nag_version = getFileVersion("samples/status-icinga1.dat");
+        $this->assertSame(1, $nag_version);
     }
 }
 
