@@ -64,10 +64,10 @@ if ($debug){ print "(dbg) File Version: $nag_version\n"; }
 $created_ts = 0;
 
 // Get Array of Nagios Data
-if ($nag_version == 3) {
-  $data = getData3($statusFile);
-} else {
+if ($nag_version == 2) {
   $data = getData2($statusFile);
+} else {
+  $data = getData3($statusFile);
 }
 
 $hosts = $data['hosts'];

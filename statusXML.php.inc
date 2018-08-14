@@ -238,7 +238,7 @@ function getData2($statusFile)
 
 function getData3($statusFile)
 
-// parse nagios3 status.dat
+// parse nagios3 / nagios4 status.dat
 
 {
   global $debug;
